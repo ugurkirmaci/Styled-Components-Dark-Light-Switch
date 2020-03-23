@@ -1,26 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useReducer } from 'react';
+import { ThemeProvider, createGlobalStyle } from 'styled-components';
+import { light, dark } from './themes';
+import Context from "./context";
+import reducer from './reducer';
+import Switch from './Switch';
+import Content from './Content';
 
-function App() {
+export const GlobalStyles = createGlobalStyle`
+  body, #root { 
+    background: ${({ theme }) => theme.background};
+    color: ${({ theme }) => theme.text};
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: BlinkMacSystemFont, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+`;
+
+export default function App() {
+  const [state,  dispatch] = useReducer(reducer, {
+    isDark: false
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Context.Provider value={{ state,dispatch }}>
+      <ThemeProvider 
+      theme={state.isDark ? dark : light}>
+          <>
+            <GlobalStyles/>
+            <Switch/>
+            <Content/>
+          </>
+      </ThemeProvider>
+    </Context.Provider>
+  )
 }
-
-export default App;
